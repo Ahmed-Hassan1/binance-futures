@@ -1,0 +1,43 @@
+<table id="myTable" class="table table-striped">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Price</th>
+        <th scope="col">24h Change</th>
+        <th scope="col">24h High / 24h Low</th>
+        <th scope="col">24h Volume</th>
+    </tr>
+    {% for symbol in symbols %}
+    <tr>
+        <td>
+            {{symbol.symbol}}
+        </td>
+
+        <td>
+            {{symbol.lastPrice}}
+        </td>
+
+        {% if symbol.priceChangePercent < 0 %}
+        <td style="color: red;">
+            {{symbol.priceChangePercent}}
+        </td>
+        {% endif %}
+
+        {% if symbol.priceChangePercent >= 0 %}
+        <td style="color: green;">
+            {{symbol.priceChangePercent}}
+        </td>
+        {% endif %}
+
+        <td>
+            {{symbol.highPrice}}  /  {{symbol.lowPrice}}
+        </td>
+        
+        <td>
+            {{symbol.quoteVolume}}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+<body>
+
+    <div>
+        <h1>30 min in green</h1>
+        <table class="table table-striped">
+            <tbody id="filter-table-30">
+
+            </tbody>
+
+        </table>
+    </div>
+
+    <hr>
+    <hr>
+
+
+    <div>
+        <h1>15 min in green</h1>
+        <table class="table table-striped">
+            <tbody id="filter-table-15">
+
+            </tbody>
+
+        </table>
+    </div>
+
+    <hr>
+    <hr>
+
+
+    <div>
+        <h1>5 min in green</h1>
+        <table class="table table-striped">
+            <tbody id="filter-table-5">
+
+            </tbody>
+
+        </table>
+    </div>
+
+    <hr>
+    <hr>
+
+    <div>
+        <h1>1 min in green</h1>
+        <table class="table table-striped">
+            <tbody id="filter-table">
+
+            </tbody>
+
+        </table>
+    </div>
+
+    <hr>
+    <hr>
+
+
+
+    <div hx-get="{% url 'table' %}" hx-trigger="every 10s">
+        {% include 'monitor/table.html' %}
+    </div>
+
+    
+    <script>
+        //htmx trigger to put the data inside a table
+        var dict =[];
+        var dict_symbols={};
+        var nf = new Intl.NumberFormat('en-US', {notation:"compact", minimumFractionDigits: 2  });
+
+        function table_monitor(minutes)
+        {
+            var filter="<tr> <th scope='col'>Name</th>  <th scope='col'>Price</th>  <th scope='col'>24h Change</th>  <th scope='col'>24h High / 24h Low</th>  <th scope='col'>24h Volume</th>   </tr> ";
+            for (const [key, value] of Object.entries(dict_symbols)) 
+            {
+                if(value>minutes*6)
+                {
+                    for(let i=0;i<dict.length;i++)
+                    {
+                        if(key==dict[i]['symbol'])
+                        {
+
+                            let x;
+                            if(dict[i]['priceChangePercent']<0)
+                            {
+                                x="<td style='color: red;'>"+dict[i]['priceChangePercent'] +"%</td>";
+                            }
+                            else
+                            {
+                                x="<td style='color: green;'>"+dict[i]['priceChangePercent'] +"%</td>";
+                            }
+                            filter+="<tr> <td>"+dict[i]['symbol'] +"</td>"  +"<td>"+dict[i]['lastPrice'] +"</td>"  + x +"<td>"+dict[i]['highPrice/lowPrice'] +"</td>"   + "<td>"+dict[i]['quoteVolume'] +"</td> </tr>";
+                        }
+                    }
+                }
+            }
+
+            return filter;
+        }
+
+
+        document.body.addEventListener('htmx:load', function(evt) {
+            var x =document.getElementById("myTable");
+            dict=[];
+            for(let i=1; i<x.rows.length;i++)
+            {
+                let x1= x.rows[i].cells[3].innerHTML.trim().split("/")[0];
+                let x2= x.rows[i].cells[3].innerHTML.trim().split("/")[1];
+                let x3=parseFloat(x1.trim()).toString() + " / "+parseFloat(x2.trim()).toString();
+                var tmp={
+                    "symbol":               x.rows[i].cells[0].innerHTML.trim(),
+                    "lastPrice":            parseFloat(x.rows[i].cells[1].innerHTML.trim()).toString(),
+                    "priceChangePercent":   parseFloat(x.rows[i].cells[2].innerHTML.trim()),
+                    "highPrice/lowPrice":   x3,
+                    "quoteVolume":          nf.format(parseFloat(x.rows[i].cells[4].innerHTML.trim())),
+                };
+                dict.push(tmp);
+            }
+
+
+            for(let i=0;i<dict.length;i++)
+            {
+                if(dict[i]['priceChangePercent']>=0)
+                {
+                    dict_symbols[dict[i]['symbol']]=(dict_symbols[dict[i]['symbol']] || 0) + 1;
+                }
+                else
+                {
+                    dict_symbols[dict[i]['symbol']]=0;
+                }
+
+            }
+            
+            $("#filter-table").empty();
+            $("#filter-table").append(table_monitor(1));
+
+            $("#filter-table-5").empty();
+            $("#filter-table-5").append(table_monitor(5));
+
+            $("#filter-table-15").empty();
+            $("#filter-table-15").append(table_monitor(15));
+
+            $("#filter-table-30").empty();
+            $("#filter-table-30").append(table_monitor(30));
+            
+            
+            //console.log(dict_symbols['C98USDT']);
+
+        });
+
+
+    </script>
+    
+</body>
+</html>
