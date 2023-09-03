@@ -13,12 +13,9 @@
 
     <div>
         <h1>30 min in green</h1>
-        <table class="table table-striped">
-            <tbody id="filter-table-30">
-
-            </tbody>
-
-        </table>
+        <div hx-get="{% url 'table_30' %}" hx-trigger="every 10s">
+            {% include 'monitor/table_30.html' %}
+        </div>
     </div>
 
     <hr>
@@ -27,12 +24,9 @@
 
     <div>
         <h1>15 min in green</h1>
-        <table class="table table-striped">
-            <tbody id="filter-table-15">
-
-            </tbody>
-
-        </table>
+        <div hx-get="{% url 'table_15' %}" hx-trigger="every 10s">
+            {% include 'monitor/table_15.html' %}
+        </div>
     </div>
 
     <hr>
@@ -41,12 +35,9 @@
 
     <div>
         <h1>5 min in green</h1>
-        <table class="table table-striped">
-            <tbody id="filter-table-5">
-
-            </tbody>
-
-        </table>
+        <div hx-get="{% url 'table_5' %}" hx-trigger="every 10s">
+            {% include 'monitor/table_5.html' %}
+        </div>
     </div>
 
     <hr>
@@ -54,12 +45,10 @@
 
     <div>
         <h1>1 min in green</h1>
-        <table class="table table-striped">
-            <tbody id="filter-table">
 
-            </tbody>
-
-        </table>
+        <div hx-get="{% url 'table_1' %}" hx-trigger="every 10s">
+        {% include 'monitor/table_1.html' %}
+        </div>
     </div>
 
     <hr>
@@ -72,7 +61,7 @@
     </div>
 
     
-    <script>
+    <!-- <script>
         //htmx trigger to put the data inside a table
         var dict =[];
         var dict_symbols={};
@@ -159,7 +148,7 @@
         });
 
 
-    </script>
+    </script> -->
     
 </body>
 </html>

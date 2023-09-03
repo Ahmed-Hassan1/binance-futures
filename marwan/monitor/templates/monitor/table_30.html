@@ -1,5 +1,3 @@
-{% load humanize %}
-
 <table id="myTable" class="table table-striped">
     <tr>
         <th scope="col">Name</th>
@@ -35,7 +33,7 @@
         </td>
         
         <td>
-            {{symbol.quoteVolume|intword}}
+            {{symbol.quoteVolume}}
         </td>
     </tr>
     {% endfor %}
